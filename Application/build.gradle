@@ -33,6 +33,8 @@ dependencies {
     compile 'com.estimote:sdk:0.9.3@aar'
 
     compile 'com.squareup.okhttp:okhttp:2.5.0'
+
+    compile 'me.palazzetti:adktoolkit:0.3.0'
 }
 
 // The sample build uses multiple directories to

@@ -32,4 +32,7 @@ public interface Constants {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
+    //
+    public static final boolean CART_CONNECTED = true;
+    public static final boolean CART_DISCONNECTED = false;
 }
