@@ -8,6 +8,7 @@ import me.palazzetti.adktoolkit.AdkManager;
  */
 public class Arduino {
     public static void command(AdkManager adkManager, int command) throws NotImplementedCommand {
+
         switch (command) {
             case 0:
                 move(adkManager);
@@ -27,10 +28,14 @@ public class Arduino {
             case 5:
                 far(adkManager);
                 break;
+            case 6:
+                down(adkManager);
+                break;
             default:
                 throw new NotImplementedCommand("This command is not available");
         }
     }
+
 
     private static void move(AdkManager adkManager) {
         adkManager.write("0");
@@ -54,5 +59,9 @@ public class Arduino {
 
     private static void far(AdkManager adkManager) {
         adkManager.write("5");
+    }
+
+    private static void down(AdkManager adkManager) {
+        adkManager.write("6");
     }
 }

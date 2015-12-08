@@ -33,7 +33,7 @@ public class getCartId extends IntentService {
 
     private void getId() {
         OkHttpClient client = new OkHttpClient();
-        String url = "http://192.168.1.3/SmartCartWeb/cart.php?mac="+mBluetoothAdapter.getAddress().toUpperCase()+"";
+        String url = "http://"+Constants.IP+"/SmartCartWeb/cart.php?mac="+mBluetoothAdapter.getAddress().toUpperCase()+"";
         Request request = new Request.Builder().url(url).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -55,7 +55,6 @@ public class getCartId extends IntentService {
         SharedPreferences.Editor idEditor = idSharedPreferences.edit();
 
         idEditor.clear();
-//        idEditor.putInt("id", Integer.parseInt(id));
         idEditor.putString("id",id);
         idEditor.apply();
     }

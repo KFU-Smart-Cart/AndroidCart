@@ -20,6 +20,7 @@ import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -43,6 +44,13 @@ import android.widget.Toast;
 
 import com.mohammedx.cart.android.cart.Arduino.Arduino;
 import com.mohammedx.cart.android.cart.Arduino.NotImplementedCommand;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 
 import me.palazzetti.adktoolkit.AdkManager;
 
@@ -59,6 +67,8 @@ public class BluetoothChatFragment extends Fragment {
     private EditText mOutEditText;
     private Button mSendButton;
     private AdkManager adkManager;
+
+    public boolean is = false;
     /**
      * Name of the connected device
      */
@@ -186,7 +196,8 @@ public class BluetoothChatFragment extends Fragment {
             mBluetoothAdapter.enable();
             // Otherwise, setup the chat session
         } else if (mChatService == null) {
-            if (isNetworkAvailable()) {
+
+            if (isconncted()) {
                 setupChat();
             }
         }
@@ -319,6 +330,27 @@ public class BluetoothChatFragment extends Fragment {
             return;
         }
         actionBar.setSubtitle(subTitle);
+    }
+
+    private boolean isconncted() {
+        if(isNetworkAvailable()) {
+            OkHttpClient client = new OkHttpClient();
+            String url = "http://"+Constants.IP+"/SmartCartWeb/index.php";
+            Request request = new Request.Builder().url(url).build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    is = false;
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    is = true;
+                }
+            });
+        }
+        return is;
     }
 
     private boolean isNetworkAvailable() {

@@ -35,4 +35,5 @@ public interface Constants {
     //
     public static final boolean CART_CONNECTED = true;
     public static final boolean CART_DISCONNECTED = false;
+    public static final String IP = "192.168.1.6";
 }

@@ -58,7 +58,7 @@ public class cartStatus extends IntentService {
 
         String id = idSharedPreferences.getString("id", null);
         OkHttpClient client = new OkHttpClient();
-        String url = "http://192.168.1.3/SmartCartWeb/CartStatusUpdate.php?Status=" + s + "&ID=" + id + "";
+        String url = "http://"+Constants.IP+"/SmartCartWeb/CartStatusUpdate.php?Status=" + s + "&ID=" + id + "";
         Request request = new Request.Builder().url(url).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
