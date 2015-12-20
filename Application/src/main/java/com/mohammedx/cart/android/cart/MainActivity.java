@@ -16,7 +16,7 @@ public class MainActivity extends FragmentActivity {
             Intent getCartIdIntent = new Intent(this, getCartId.class);
             startService(getCartIdIntent);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            BluetoothChatFragment fragment = new BluetoothChatFragment();
+            BluetoothFragment fragment = new BluetoothFragment();
             transaction.replace(R.id.sample_content_fragment, fragment);
             transaction.commit();
         }

@@ -20,7 +20,6 @@ import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -58,17 +57,16 @@ import me.palazzetti.adktoolkit.AdkManager;
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class BluetoothChatFragment extends Fragment {
+public class BluetoothFragment extends Fragment {
 
-    private static final String TAG = "BluetoothChatFragment";
+    private static final String TAG = "BluetoothFragment";
     public int x = 0;
+    public boolean is = false;
     // Layout Views
     private ListView mConversationView;
     private EditText mOutEditText;
     private Button mSendButton;
     private AdkManager adkManager;
-
-    public boolean is = false;
     /**
      * Name of the connected device
      */
@@ -79,7 +77,7 @@ public class BluetoothChatFragment extends Fragment {
      */
     private ArrayAdapter<String> mConversationArrayAdapter;
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * The Handler that gets information back from the BluetoothService
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -88,18 +86,18 @@ public class BluetoothChatFragment extends Fragment {
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case BluetoothService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             Intent cartStatus = new Intent(getActivity(), cartStatus.class);
                             cartStatus.putExtra("status", Constants.CART_CONNECTED);
                             getActivity().startService(cartStatus);
                             break;
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             Intent ccartStatus = new Intent(getActivity(), cartStatus.class);
                             ccartStatus.putExtra("status", Constants.CART_DISCONNECTED);
@@ -154,7 +152,7 @@ public class BluetoothChatFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private BluetoothService mChatService = null;
     /**
      * The action listener for the EditText widget, to listen for the return key
      */
@@ -197,7 +195,7 @@ public class BluetoothChatFragment extends Fragment {
             // Otherwise, setup the chat session
         } else if (mChatService == null) {
 
-            if (isconncted()) {
+            if (isNetworkAvailable()) {
                 setupChat();
             }
         }
@@ -220,7 +218,7 @@ public class BluetoothChatFragment extends Fragment {
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == BluetoothService.STATE_NONE) {
                 // Start the Bluetooth chat services
                 mChatService.start();
             }
@@ -267,8 +265,8 @@ public class BluetoothChatFragment extends Fragment {
             }
         });
 
-        // Initialize the BluetoothChatService to perform bluetooth connections
-        mChatService = new BluetoothChatService(getActivity(), mHandler);
+        // Initialize the BluetoothService to perform bluetooth connections
+        mChatService = new BluetoothService(getActivity(), mHandler);
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -281,14 +279,14 @@ public class BluetoothChatFragment extends Fragment {
      */
     private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+        if (mChatService.getState() != BluetoothService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Check that there's actually something to send
         if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
+            // Get the message bytes and tell the BluetoothService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
 
@@ -332,10 +330,10 @@ public class BluetoothChatFragment extends Fragment {
         actionBar.setSubtitle(subTitle);
     }
 
-    private boolean isconncted() {
-        if(isNetworkAvailable()) {
+    private boolean isConncted() {
+        if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
-            String url = "http://"+Constants.IP+"/SmartCartWeb/index.php";
+            String url = "http://" + Constants.IP + "/SmartCartWeb/index.php";
             Request request = new Request.Builder().url(url).build();
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
